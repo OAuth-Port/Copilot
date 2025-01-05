@@ -1,0 +1,232 @@
+{
+  "name": "copilot-mcp",
+  "author": {
+    "email": "vikash@automatalabs.io",
+    "name": "Vikash Loomba",
+    "url": "https://cloudmcp.run"
+  },
+  "publisher": "AutomataLabs",
+  "repository": {
+    "url": "https://github.com/vikashloomba/copilot-mcp",
+    "type": "git"
+  },
+  "displayName": "Copilot MCP + Agent Skills Manager",
+  "description": "Search, manage, and install Skills and MCP servers for your AI agents.",
+  "version": "0.0.91",
+  "icon": "logo.png",
+  "engines": {
+    "vscode": "^1.104.0"
+  },
+  "sponsor": {
+    "url": "https://github.com/sponsors/VikashLoomba"
+  },
+  "categories": [
+    "AI",
+    "Chat",
+    "Other"
+  ],
+  "keywords": [
+    "claude",
+    "claude code",
+    "codex",
+    "codex cli",
+    "chat-participant",
+    "copilot",
+    "copilot-mcp",
+    "chat-participant-utils",
+    "dev",
+    "mcp",
+    "openrouter",
+    "coding",
+    "agent",
+    "chatgpt",
+    "sonnet",
+    "ai",
+    "llama",
+    "model context protocol",
+    "skills",
+    "skills.sh",
+    "agent skills",
+    "claude skills",
+    "codex skills",
+    "copilot skills"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "extensionDependencies": [],
+  "contributes": {
+    "chatParticipants": [
+      {
+        "id": "copilot.mcp-agent",
+        "name": "mcp",
+        "fullName": "MCP Finder",
+        "description": "Find and install MCP servers for VSCode",
+        "isSticky": true,
+        "commands": [
+          {
+            "name": "search",
+            "description": "Search for MCP servers to install",
+            "disambiguation": [
+              {
+                "category": "mcp_search",
+                "description": "The user wants to search for Model Context Protocol (MCP) servers",
+                "examples": [
+                  "What mcp servers are there for figma?",
+                  "Can you find a browser mcp server to use?",
+                  "Can find an mcp server for X?"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "install",
+            "description": "Install an MCP server",
+            "disambiguation": [
+              {
+                "category": "mcp_install",
+                "description": "The user wants to install a Model Context Protocol (MCP) server to VSCode.",
+                "examples": [
+                  "Can you install the firecrawl mcp server for me?",
+                  "Add the github mcp server to vscode"
+                ]
+              }
+            ]
+          }
+        ],
+        "disambiguation": [
+          {
+            "category": "mcp_search",
+            "description": "The user is asking about finding Model Context Protocol (MCP) servers",
+            "examples": [
+              "Can you help me find mcp servers for interacting with my local database?",
+              "Can you help me install the mcp memory server?",
+              "How do I install the firecrawl MCP server?",
+              "Can you help me add the figma MCP server?",
+              "What mcp servers are there for task management?"
+            ]
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "command": "copilot-mcp.showLogs",
+        "title": "Show Copilot MCP Logs",
+        "category": "Copilot MCP"
+      }
+    ],
+    "viewsContainers": {
+      "secondarySidebar": [
+        {
+          "id": "copilotMcpSidebar",
+          "title": "Copilot MCP",
+          "icon": "resources/light/server.svg"
+        }
+      ],
+      "activitybar": [
+        {
+          "id": "copilotMcpLauncher",
+          "title": "Copilot MCP",
+          "icon": "resources/light/server.svg"
+        }
+      ]
+    },
+    "views": {
+      "copilotMcpSidebar": [
+        {
+          "type": "webview",
+          "id": "copilotMcpView",
+          "name": "Copilot MCP Panel",
+          "icon": "resources/light/server.svg"
+        }
+      ],
+      "copilotMcpLauncher": [
+        {
+          "type": "webview",
+          "id": "copilotMcpLauncherView",
+          "name": "Open Copilot MCP",
+          "icon": "resources/light/server.svg"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Copilot MCP",
+      "properties": {
+        "copilotMcp.logLevel": {
+          "type": "string",
+          "enum": [
+            "debug",
+            "info",
+            "warn",
+            "error",
+            "none"
+          ],
+          "default": "info",
+          "description": "Set the logging level for the Copilot MCP extension output channel"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "install:all": "npm install && npm --prefix web install",
+    "start:webview": "cd web && npm run start",
+    "build:webview": "npm --prefix web run build",
+    "vscode:prepublish": "npm run package-if-needed",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "watch:webview": "npm --prefix web run build -- --watch",
+    "package": "npm run build:all",
+    "package-if-needed": "test -f dist/extension.js && test -d web/dist || npm run build:all",
+    "package-force": "npm run build:all",
+    "build:all": "npm run compile && npm run build:webview",
+    "package-extension": "npm run package && npx @vscode/vsce package -o copilot-mcp-${npm_package_version}.vsix",
+    "compile-tests": "tsc -p src/test/tsconfig.json",
+    "watch-tests": "tsc -p src/test/tsconfig.json -w",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test",
+    "test:webview": "npm --prefix web run test",
+    "test:ui": "npm run build:all && npm run compile-tests && node ./out/test/ui/runTest.js",
+    "test:all-ui": "npm run test:webview && npm run test:ui",
+    "deploy": "npx @vscode/vsce publish -p $VSCE_PAT",
+    "optimize-agent": "tsx src/optimize-mcp-agent.ts"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.101.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2",
+    "esbuild": "^0.25.3",
+    "eslint": "^9.25.1",
+    "mocha": "^11.7.5",
+    "typescript": "^5.8.3",
+    "vscode-extension-tester": "^8.21.0"
+  },
+  "dependencies": {
+    "@ai-sdk/openai-compatible": "^0.2.14",
+    "@ax-llm/ax": "^14.0.16",
+    "@ax-llm/ax-ai-sdk-provider": "^14.0.16",
+    "@octokit/rest": "^21.1.1",
+    "@opentelemetry/api-logs": "^0.200.0",
+    "@opentelemetry/exporter-logs-otlp-http": "^0.201.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.200.0",
+    "@vscode/chat-extension-utils": "^0.0.0-alpha.5",
+    "@vscode/extension-telemetry": "^1.0.0",
+    "ai": "^5.0.17",
+    "axios": "^1.11.0",
+    "gray-matter": "^4.0.3",
+    "octokit": "^4.1.3",
+    "simple-git": "^3.30.0",
+    "vscode-messenger": "^0.5.1",
+    "xdg-basedir": "^5.1.0",
+    "zod": "^3.24.4"
+  }
+}
